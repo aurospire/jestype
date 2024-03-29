@@ -1,7 +1,22 @@
 import { expectType } from "@/TypeAssertions";
 
 describe('TypeAssertions', () => {
+    it('tests toBe', () => {
+        expectType<1>().toBe<1>();
+        expectType<1>().not.toBe<2>();
+
+        expectType<{ a: boolean; }>().toBe<{ a: boolean; }>();
+        expectType<{ a: boolean; }>().not.toBe<{ a: boolean; b?: string; }>();
+        expectType<{ a: boolean; b?: string; }>().not.toBe<{ a: boolean; }>();
+    });
+
     it('tests toExtend', () => {
+        expectType<string>().toExtend<string | number>();
+        expectType<string | number>().not.toExtend<string>();
+
+        expectType<'hello'>().toExtend<string>();
+        expectType<string>().not.toExtend<'hello'>();
+
         expectType<1>().toExtend<number>();
         expectType<number>().not.toExtend<1>();
 
@@ -10,13 +25,12 @@ describe('TypeAssertions', () => {
         expectType<{ a: boolean; b?: string; }>().toExtend<{ a: boolean; }>();
     });
 
-    it('tests toBe', () => {
-        expectType<1>().toBe<1>();
-        expectType<1>().not.toBe<2>();
+    it('tests toBeOfUnion', () => {
+        expectType<string>().toBeOfUnion<string | number>();
+        expectType<string | number>().not.toBeOfUnion<string>();
 
-        expectType<{ a: boolean; }>().toBe<{ a: boolean; }>();
-        expectType<{ a: boolean; }>().not.toBe<{ a: boolean; b?: string; }>();
-        expectType<{ a: boolean; b?: string; }>().not.toBe<{ a: boolean; }>();
+        expectType<'hello'>().toBeOfUnion<string>();
+        expectType<string>().not.toBeOfUnion<'hello'>();
     });
 
     it('tests toHave', () => {

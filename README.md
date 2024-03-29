@@ -34,40 +34,42 @@ expectType<string>().not.toBe<number>();
 
 ### Methods
 
-- `.toBe<S>(s?: S)`: Asserts that the tested type is exactly the same as type `S`.
+- `.toBe<S>()`: Asserts that the tested type `T` is exactly the same as type `S`.
 
-- `.toExtend<S>(s?: S)`: Asserts that the tested type extends type `S`.
+- `.toExtend<S>()`: Asserts that the tested type `T` extends type `S`.
 
-- `.toHave<S>(s?: S)`: Asserts that the tested type has the same properties as type `S`.
+- `.toBeOfUnion<S>()`: Asserts that the tested type `T` is part of the union `S`
 
-- `.toBePartOf<S>(s?: S)`: Asserts that the tested type is a subset of type `S`.
+- `.toHave<S>()`: Asserts that the tested type `T` has the same properties as type `S`.
 
-- `.toHaveRequired<K extends string[]>(keys?: K)`: Asserts that the tested type has all the required keys specified in `K`.
+- `.toBePartOf<S>()`: Asserts that the tested type `T` is a subset of type `S`.
 
-- `.toHaveOptional<K extends string[]>(keys?: K)`: Asserts that the tested type has all the optional keys specified in `K`.
+- `.toHaveRequired<K extends string[]>()`: Asserts that the tested type `T` has all the required keys specified in `K`.
+
+- `.toHaveOptional<K extends string[]>()`: Asserts that the tested type `T` has all the optional keys specified in `K`.
 
 - `.not`: Inverts the subsequent type assertion, allowing for negated checks.
 
 ### Examples
 
-#### `.toBe`
+#### `.toBe<S>`
+
+Asserts that the tested type `T` is exactly the same as type `S`.
+
 ```typescript
 // Should pass: string is exactly a string
 expectType<string>().toBe<string>();
 
 // Should fail: string is not a number
-expectType<string>().not.toBe<number>();
+expectType<string>().toBe<number>();
 
 ```
+---
 
-#### `.toExtend`
+#### `.toExtend<S>`
+Asserts that the tested type `T` extends type `S`.
+
 ```typescript
-/* Using Unions */
-expectType<string>().toExtend<string | number>()
-
-expectType<string | number>().not.toExtend<string>();
-
-
 /* Using Interfaces*/
 interface Base {
     baseProp: string;
@@ -81,10 +83,36 @@ interface Extended extends Base {
 expectType<Extended>().toExtend<Base>();
 
 // Should fail: Base does not extend Extended
-expectType<Base>().not.toExtend<Extended>();
-```
+expectType<Base>().toExtend<Extended>();
 
-#### `.toHave`
+
+/* Using Unions */
+
+// Should pass: string is assignable to string | number 
+expectType<string>().toExtend<string | number>();
+
+// Should fail: string | number is not assignable to string 
+expectType<string | number>().toExtend<string>();
+```
+---
+
+#### `.toBeOfUnion<S>`
+Asserts that the tested type `T` is part of the union `S`
+
+Exactly the same as `toExtend`, but lends to a more intuitive sounding type assertion for unions
+
+```typescript
+// Should pass: `string` is part of union `string | number`
+expectType<string>().toBeOfUnion<string | number>();
+
+// Should fail: `string` is not in union `string | number`
+expectType<string | number>().toBeOfUnion<string>();
+```
+---
+
+#### `.toHave<S>`
+Asserts that the tested type `T` has the same properties as type `S`.
+
 ```typescript
 interface Person {
     name: string;
@@ -95,10 +123,13 @@ interface Person {
 expectType<Person>().toHave<{ name: string; age: number; }>();
 
 // Should fail: Person does not have a salary property
-expectType<Person>().not.toHave<{ salary: number; }>();
+expectType<Person>().toHave<{ salary: number; }>();
 ```
+---
 
-#### `.toBePartOf`
+#### `.toBePartOf<S>`
+Asserts that the tested type `T` is a subset of type `S`.
+
 ```typescript
 interface Vehicle {
     make: string;
@@ -115,9 +146,12 @@ interface Car {
 expectType<Car>().toBePartOf<Vehicle>();
 
 // Should fail: Vehicle is not a subset of Car
-expectType<Vehicle>().not.toBePartOf<Car>();
+expectType<Vehicle>().toBePartOf<Car>();
 ```
+---
+
 #### `.toHaveRequired`
+Asserts that the tested type `T` has all the required keys specified in `K`.
 
 ```typescript
 interface User {
@@ -130,11 +164,12 @@ interface User {
 expectType<User>().toHaveRequired<['id', 'name']>();
 
 // Should fail: User does not have a required key 'password'
-expectType<User>().not.toHaveRequired<['password']>();
-
+expectType<User>().toHaveRequired<['password']>();
 ```
+---
 
-#### `.toHaveOptional`
+#### `.toHaveOptional<S>`
+Asserts that the tested type `T` has all the optional keys specified in `K`.
 
 ```typescript
 interface Product {
@@ -148,7 +183,19 @@ interface Product {
 expectType<Product>().toHaveOptional<['description']>();
 
 // Should fail: Product does not have an optional key 'weight'
-expectType<Product>().not.toHaveOptional<['weight']>();
+expectType<Product>().toHaveOptional<['weight']>();
+```
+---
+
+#### `.not`
+Inverts the subsequent type assertion, allowing for negated checks.
+
+```typescript
+// Should pass: string is not a number
+expectType<string>().not.toBe<number>();
+
+// Should fail: string is not a number
+expectType<string>().<number>();
 ```
 
 ## Type Utilities
